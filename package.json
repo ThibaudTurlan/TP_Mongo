@@ -1,0 +1,24 @@
+{
+  "name": "google_maps_project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "node-sass": "^4.9.3",
+    "request": "^2.88.0",
+    "twig": "^1.12.0",
+    "mongoose": "^5.0.0-rc0",
+    "body-parser": "^1.8.1",
+    "mongo-sanitize": "^1.0.1",
+    "get-json": "1.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node server.js",
+    "sass": "node-sass --output-style compressed ressources/scss --output public/css"
+  },
+  "author": "",
+  "license": "ISC"
+}

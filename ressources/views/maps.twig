@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Maps - Nancy</title>
+    <link rel="stylesheet" type="text/css" href="/css/index.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1 class="title">Google maps : Nancy informations | CORDIER Florian et ROHRBACHER Léon</h1>
+    <div class="informations">
+        <p class="informations textInfo">Les points verts de la carte représentent les parkings de Nancy. Les bleus les points personnalisés.<br/> En cliquant dessus, vous obtiendrez les informations relatives à ce parking.</p>
+    </div>
+    <div id="map"></div>
+
+    <div class="addPoint">
+    <h2>Ajouter un point :</h2>
+        <form action="/addPoint" method="POST">
+            <input type="number" step=any name="pointPositionLat" placeholder="Latitude du point" required/>
+            <input type="number" step=any name="pointPositionLng" placeholder="Longitude du point" required/>
+            <input type="text" name="pointName" placeholder="Nom du point" required/>
+            <input type="text" name="pointAddress" placeholder="Adresse du point" required/>
+            <input class="buttonNew" type="submit" value="Cliquer ici pour ajouter un point"/>
+            <p><b>Exemple :</b> Lat: 48.6828361  Lng : 6.161133999999947  Nom : IUT NC  Adresse : 2Ter Boulevard Charlemagne, 54000 Nancy, France</p>
+        </form> 
+    </div>
+
+    <script>
+    let map;
+    let activeInfo = null;
+    function initMap() {
+        // Init
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 48.692054, lng: 6.184416999999939},
+            zoom: 12
+        });
+
+        $.get("/data/markers", function(data, dataBike){
+            // Creating markers for parking
+            data.forEach(function(element) {
+                let markerIcon = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
+                let infowindow = new google.maps.InfoWindow({
+                    content: "<h1>" + element.name + "</h1><b>Adresse : </b>" + element.address + "<br/><b>Capacité totale : </b>" + element.capacity + "<br/><b>Places disponibles : </b>" + element.places
+                });
+
+                if(element.type == "customPlace"){
+                    markerIcon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+                    infowindow = new google.maps.InfoWindow({
+                        content: "<h1>" + element.name + "</h1><b>Adresse : </b>" + element.address
+                        + "<br/><b>Point personnalisé.</b>"
+                    });
+                }
+                
+                let marker = new google.maps.Marker({
+                    position: {lat:element.y, lng:element.x},
+                    map: map,
+                    icon : markerIcon,
+                    title : element.name
+                });
+
+                //Attach infowindow to the marker
+                marker.info = infowindow;
+
+                google.maps.event.addListener(marker, 'click', function() {
+                    if(activeInfo != null) activeInfo.close();
+                    
+                    marker.info.open(map, marker);
+                    activeInfo = marker.info;
+                });
+            });
+        });
+
+        $.get("/data/markersbike", function(dataBike){
+            // Creating markers for bike
+            dataBike.forEach(function(element) {
+                let markerIcon = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
+                let infowindow = new google.maps.InfoWindow({
+                    content: "<h1> station vélo" + element.name + "</h1><b>Adresse : </b>" + element.address + "<br/><b>Capacité totale : </b>" + element.stands + "<br/><b>Places disponibles : </b>" + element.bikes
+                });
+                
+                let marker = new google.maps.Marker({
+                    position: {lat:element.x, lng:element.y},
+                    map: map,
+                    icon : markerIcon,
+                    title : element.name
+                });
+
+                //Attach infowindow to the marker
+                marker.info = infowindow;
+
+                google.maps.event.addListener(marker, 'click', function() {
+                    if(activeInfo != null) activeInfo.close();
+                    
+                    marker.info.open(map, marker);
+                    activeInfo = marker.info;
+                });
+            });
+        });
+    }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkvO7lbg5EyOSm6v25uNVKqRVsi51bnzY&callback=initMap"
+    async defer></script>
+</body>
+</html>
+
+{# https://geoservices.grand-nancy.org/arcgis/rest/services/public/VOIRIE_Parking/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=nom%2Cadresse%2Cplaces%2Ccapacite&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentsOnly=false&datumTransformation=&parameterValues=&rangeValues=&f=pjson #}

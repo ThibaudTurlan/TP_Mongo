@@ -1,0 +1,11 @@
+THIBAUD TURLAN CIASIE LP2
+https://github.com/ThibaudTurlan/TP_Mongo
+
+Instaler les package
+`npm i`
+
+On lance le server
+`npm start`
+
+
+locahost::9080
