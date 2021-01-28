@@ -9,3 +9,5 @@ On lance le server
 
 
 locahost::9080
+
+La carte affiche les stations vélos et les parkings de la ville de Nancy
